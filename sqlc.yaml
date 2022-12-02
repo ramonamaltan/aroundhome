@@ -1,0 +1,8 @@
+version: "1"
+packages:
+  - name: "models"
+    path: "internal/models"
+    queries: "./sql/"
+    schema: "./internal/db/migrations"
+    engine: "postgresql"
+    emit_db_tags: true
