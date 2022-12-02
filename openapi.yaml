@@ -1,0 +1,159 @@
+openapi: 3.0.0
+info:
+  title: Partner API
+  description: |
+    Aroundhome Partner API Service
+  version: 1.0.0
+servers: []
+paths:
+  /v1/{serviceName}/partner:
+    get:
+      tags:
+        - partner
+      description: Returns a list of partners offering a specific service
+      parameters:
+        - name: serviceName
+          in: path
+          required: true
+          description: name of the service being offered by a partner
+          schema:
+            type: string
+            example: flooring
+        - name: material
+          in: query
+          required: true
+          description: material the partner is specified in
+          schema:
+            type: string
+            example: wood
+        - name: lat
+          in: query
+          required: true
+          description: latitude of customer's house
+          schema:
+            type: string
+            example: 52.56015
+        - name: long
+          in: query
+          required: true
+          description: latitude of customer's house
+          schema:
+            type: string
+            example: 13.37940
+      responses:
+        '200':
+          description: success response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/partnerData'
+        '400':
+          description: bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+  /v1/{serviceName}/partner/{id}:
+    get:
+      tags:
+        - partner
+      description: Returns data for a specific partner offering a specific service
+      parameters:
+        - name: serviceName
+          in: path
+          required: true
+          description: name of the service being offered by a partner
+          schema:
+            type: string
+            example: flooring
+        - name: id
+          in: path
+          required: true
+          description: unique identifier of partner
+          schema:
+            type: number
+        - name: material
+          in: query
+          required: true
+          description: material the partner is specified in
+          schema:
+            type: string
+            example: wood
+        - name: lat
+          in: query
+          required: true
+          description: latitude of customer's house
+          schema:
+            type: string
+            example: 52.56015
+        - name: long
+          in: query
+          required: true
+          description: latitude of customer's house
+          schema:
+            type: string
+            example: 13.37940
+      responses:
+        '200':
+          description: success response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/partnerData'
+        '404':
+          description: not found error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/notFound'
+        '400':
+          description: bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+components:
+  schemas:
+    partnerData:
+      type: object
+      properties:
+        material:
+          type: string
+          description: type of material the partner is specialized in
+        address:
+          type: object
+          properties:
+            lat:
+              type: string
+              description: latitude of partner office
+              example: 52.55722
+            long:
+              type: string
+              description: longitude of partner office
+              example: 13.38239
+        operatingRadius:
+          type: number
+          description: beeline from address in km
+          example: 50
+    notFound:
+      type: object
+      properties:
+        errors:
+          items:
+            properties:
+              code:
+                example: 404
+              message:
+                example: Not Found
+    badRequest:
+      type: object
+      properties:
+        errors:
+          items:
+            properties:
+              code:
+                example: 400
+              message:
+                example: Bad Request
