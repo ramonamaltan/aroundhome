@@ -2,6 +2,8 @@
 
 This API gives you information about partners that are specified in a service.
 
+As of now the serviceName should be `flooring` but other services can be added later.
+
 The location of all our partners is somewhere within or in the proximity to berlin.
 When making requests search for a lat/long within berlin to find partners closeby.
 
@@ -43,7 +45,7 @@ psql aroundhome;
 SELECT * FROM partners;
 ```
 
-### Notes
+### Notes and Assumptions
 - For creating queries and db models I use [sqlc](https://docs.sqlc.dev/en/stable/)
 - I made the Assumption that the Square meters of the floor and Phone number (for the partner to contact the customer)
 are not relevant for GET requests but for creating customers data e.g. POST `/customer`

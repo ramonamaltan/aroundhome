@@ -36,7 +36,7 @@ paths:
         - name: long
           in: query
           required: true
-          description: latitude of customer's house
+          description: longitude of customer's house
           schema:
             type: string
             example: 13.37940
