@@ -1,10 +1,16 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
+	"log"
+	"math/rand"
+	"time"
 
+	"github.com/jaswdr/faker"
 	_ "github.com/lib/pq"
+	"github.com/ramonamaltan/go-api/internal/models"
 )
 
 const (
@@ -24,7 +30,6 @@ func Init() *sql.DB {
 	if err != nil {
 		panic(err)
 	}
-	//defer DB.Close()
 
 	err = db.Ping()
 	if err != nil {
@@ -32,18 +37,49 @@ func Init() *sql.DB {
 	}
 	fmt.Println("Successfully connected!")
 
-	err = insertDummyData(db)
+	_, err = insertDummyData(db)
 	if err != nil {
-		panic(err)
+		log.Fatal("failed to insert dummy data")
 	}
 	return db
 }
 
-func insertDummyData(db *sql.DB) error {
-	insertDynStmt := `insert into "partners"("servicename", "latitude", "longitude", "radius") values($1, $2, $3, $4)`
-	_, err := db.Exec(insertDynStmt, "flooring", 59.12345, 59.12345, 50)
+func insertDummyData(db *sql.DB) ([]models.Partner, error) {
+	clearDB := `delete from "partners"`
+	_, err := db.Exec(clearDB)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	return nil
+
+	rand.Seed(time.Now().UnixNano())
+	fake := faker.New()
+	materials := []string{"wood", "tiles", "carpet", "wood, tiles", "wood, tiles, carpet", "carpet, wood"}
+	services := []string{"flooring", "other"}
+	queries := models.New(db)
+	var partners []models.Partner
+	for i := 0; i < 100; i++ {
+		randomRating := rand.Intn(5)
+		randomRadius := rand.Intn(100)
+		randMatI := rand.Intn(len(materials))
+		material := materials[randMatI]
+		randSerI := rand.Intn(len(services))
+		service := services[randSerI]
+		lat := rand.Float64() + 52
+		long := rand.Float64() + 13
+		partner, err2 := queries.CreatePartner(context.Background(), models.CreatePartnerParams{
+			Partnername: fake.Person().Name(),
+			Servicename: service,
+			Latitude:    lat,
+			Longitude:   long,
+			Material:    material,
+			Radius:      int32(randomRadius),
+			Rating:      float64(randomRating),
+		})
+		if err2 != nil {
+			return nil, err2
+		}
+		partners = append(partners, partner)
+	}
+
+	return partners, nil
 }

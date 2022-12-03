@@ -6,7 +6,7 @@ info:
   version: 1.0.0
 servers: []
 paths:
-  /v1/{serviceName}/partner:
+  /{serviceName}/partner:
     get:
       tags:
         - partner
@@ -55,7 +55,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/badRequest'
-  /v1/{serviceName}/partner/{id}:
+  /{serviceName}/partner/{id}:
     get:
       tags:
         - partner
@@ -74,27 +74,6 @@ paths:
           description: unique identifier of partner
           schema:
             type: number
-        - name: material
-          in: query
-          required: true
-          description: material the partner is specified in
-          schema:
-            type: string
-            example: wood
-        - name: lat
-          in: query
-          required: true
-          description: latitude of customer's house
-          schema:
-            type: string
-            example: 52.56015
-        - name: long
-          in: query
-          required: true
-          description: latitude of customer's house
-          schema:
-            type: string
-            example: 13.37940
       responses:
         '200':
           description: success response

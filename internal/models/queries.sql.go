@@ -7,33 +7,83 @@ package models
 
 import (
 	"context"
-	"database/sql"
 )
 
+const createPartner = `-- name: CreatePartner :one
+INSERT INTO partners (
+    partnername, servicename, latitude, longitude, material, radius, rating
+) VALUES ($1, $2, $3, $4, $5, $6, $7)
+RETURNING id, partnername, servicename, latitude, longitude, material, radius, rating
+`
+
+type CreatePartnerParams struct {
+	Partnername string  `db:"partnername"`
+	Servicename string  `db:"servicename"`
+	Latitude    float64 `db:"latitude"`
+	Longitude   float64 `db:"longitude"`
+	Material    string  `db:"material"`
+	Radius      int32   `db:"radius"`
+	Rating      float64 `db:"rating"`
+}
+
+func (q *Queries) CreatePartner(ctx context.Context, arg CreatePartnerParams) (Partner, error) {
+	row := q.db.QueryRowContext(ctx, createPartner,
+		arg.Partnername,
+		arg.Servicename,
+		arg.Latitude,
+		arg.Longitude,
+		arg.Material,
+		arg.Radius,
+		arg.Rating,
+	)
+	var i Partner
+	err := row.Scan(
+		&i.ID,
+		&i.Partnername,
+		&i.Servicename,
+		&i.Latitude,
+		&i.Longitude,
+		&i.Material,
+		&i.Radius,
+		&i.Rating,
+	)
+	return i, err
+}
+
 const getPartner = `-- name: GetPartner :one
-SELECT id, servicename, latitude, longitude, radius FROM partners
+SELECT id, partnername, servicename, latitude, longitude, material, radius, rating FROM partners
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetPartner(ctx context.Context, id sql.NullInt64) (Partner, error) {
+func (q *Queries) GetPartner(ctx context.Context, id int64) (Partner, error) {
 	row := q.db.QueryRowContext(ctx, getPartner, id)
 	var i Partner
 	err := row.Scan(
 		&i.ID,
+		&i.Partnername,
 		&i.Servicename,
 		&i.Latitude,
 		&i.Longitude,
+		&i.Material,
 		&i.Radius,
+		&i.Rating,
 	)
 	return i, err
 }
 
 const listPartners = `-- name: ListPartners :many
-SELECT id, servicename, latitude, longitude, radius FROM partners
+SELECT id, partnername, servicename, latitude, longitude, material, radius, rating FROM partners
+WHERE servicename = $1 AND material like $2
+ORDER BY radius ASC
 `
 
-func (q *Queries) ListPartners(ctx context.Context) ([]Partner, error) {
-	rows, err := q.db.QueryContext(ctx, listPartners)
+type ListPartnersParams struct {
+	Servicename string `db:"servicename"`
+	Material    string `db:"material"`
+}
+
+func (q *Queries) ListPartners(ctx context.Context, arg ListPartnersParams) ([]Partner, error) {
+	rows, err := q.db.QueryContext(ctx, listPartners, arg.Servicename, arg.Material)
 	if err != nil {
 		return nil, err
 	}
@@ -43,10 +93,13 @@ func (q *Queries) ListPartners(ctx context.Context) ([]Partner, error) {
 		var i Partner
 		if err := rows.Scan(
 			&i.ID,
+			&i.Partnername,
 			&i.Servicename,
 			&i.Latitude,
 			&i.Longitude,
+			&i.Material,
 			&i.Radius,
+			&i.Rating,
 		); err != nil {
 			return nil, err
 		}

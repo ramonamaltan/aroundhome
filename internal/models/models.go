@@ -4,14 +4,15 @@
 
 package models
 
-import (
-	"database/sql"
-)
+import ()
 
 type Partner struct {
-	ID          sql.NullInt64 `db:"id"`
-	Servicename string        `db:"servicename"`
-	Latitude    float64       `db:"latitude"`
-	Longitude   float64       `db:"longitude"`
-	Radius      int32         `db:"radius"`
+	ID          int64   `db:"id"`
+	Partnername string  `db:"partnername"`
+	Servicename string  `db:"servicename"`
+	Latitude    float64 `db:"latitude"`
+	Longitude   float64 `db:"longitude"`
+	Material    string  `db:"material"`
+	Radius      int32   `db:"radius"`
+	Rating      float64 `db:"rating"`
 }

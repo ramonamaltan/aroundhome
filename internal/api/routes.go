@@ -16,7 +16,7 @@ func SetupRoutes(db *sql.DB) *gin.Engine {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
 
-	rg := r.Group("/partners")
+	rg := r.Group("/:serviceName/partners")
 	rg.GET("", GetPartnerList(queries))
 	rg.GET("/:id", GetPartnerByID(queries))
 

@@ -3,10 +3,11 @@ module github.com/ramonamaltan/go-api
 go 1.19
 
 require (
-	github.com/doug-martin/goqu/v9 v9.18.0
 	github.com/gin-gonic/gin v1.8.1
+	github.com/jaswdr/faker v1.15.0
 	github.com/lib/pq v1.10.1
 	github.com/stretchr/testify v1.8.1
+	github.com/umahmood/haversine v0.0.0-20151105152445-808ab04add26
 )
 
 require (
