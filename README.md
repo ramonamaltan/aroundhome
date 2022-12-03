@@ -14,6 +14,11 @@ Make it look pretty pasting it into https://editor.swagger.io/.
 Clone project and run `go run cmd/main.go`.
 Go to `localhost:8080` and start making requests.
 
+#### Example Request
+````
+http://localhost:8080/flooring/partners?material=carpet&long=13.000&lat=53.000
+````
+
 ### Dummy Data
 On every start of the project a new set of `100 partners` are being inserted to the db.
 
