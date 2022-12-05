@@ -12,6 +12,20 @@ import (
 	"github.com/umahmood/haversine"
 )
 
+type PartnerResponse struct {
+	ID           int64   `json:"id"`
+	Material     string  `json:"material"`
+	Address      Address `json:"address"`
+	Radius       int32   `json:"operating_radius"`
+	Rating       float64 `json:"rating"`
+	KmToCustomer float64 `json:"km_to_customer"`
+}
+
+type Address struct {
+	Lat  float64 `json:"lat"`
+	Long float64 `json:"long"`
+}
+
 func GetPartnerList(queries *models.Queries) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		serviceName := c.Param("serviceName")
@@ -39,7 +53,7 @@ func GetPartnerList(queries *models.Queries) func(c *gin.Context) {
 		}
 		customerCoord := haversine.Coord{Lat: lat, Lon: long}
 
-		var partnerList []models.Partner
+		var partnerList []PartnerResponse
 		for _, partner := range partners {
 			partnerLat := partner.Latitude
 			partnerLong := partner.Longitude
@@ -47,7 +61,18 @@ func GetPartnerList(queries *models.Queries) func(c *gin.Context) {
 			_, km := haversine.Distance(customerCoord, partnerCoord)
 			// check distance to customer is within partner radius
 			if km <= float64(partner.Radius) {
-				partnerList = append(partnerList, partner)
+				partnerMatch := PartnerResponse{
+					ID:       partner.ID,
+					Material: partner.Material,
+					Address: Address{
+						Lat:  partner.Latitude,
+						Long: partner.Longitude,
+					},
+					Radius:       partner.Radius,
+					Rating:       partner.Rating,
+					KmToCustomer: km,
+				}
+				partnerList = append(partnerList, partnerMatch)
 			}
 		}
 

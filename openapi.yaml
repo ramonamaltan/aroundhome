@@ -109,12 +109,20 @@ components:
               description: latitude of partner office
               example: 52.55722
             long:
-              type: string
+              type: number
               description: longitude of partner office
               example: 13.38239
-        operatingRadius:
+        operating_radius:
           type: number
           description: beeline from address in km
+          example: 50
+        rating:
+          type: number
+          description: partner rating
+          example: 4
+        km_to_customer:
+          type: number
+          description: distance from partner to customer
           example: 50
     notFound:
       type: object
