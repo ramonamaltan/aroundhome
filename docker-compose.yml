@@ -41,7 +41,6 @@ services:
     image: migrate/migrate
     volumes:
       - ./internal/db/migrations:/migrations
-    # here instead of localhost as the host we use databaseservicename as that is the name we gave to the postgres service
     command:
       [ "-path", "/migrations", "-database",  "postgres://pguser:localtest@postgres_db:5432/aroundhome?sslmode=disable", "up" ]
     depends_on:

@@ -1,54 +1,50 @@
 # Aroundhome Partner API
 
-This API gives you information about partners that are specified in a service.
+This API gives you information about partners that are proficient in a service.
 
 As of now the serviceName should be `flooring` but other services can be added later.
 
 The location of all our partners is somewhere within or in the proximity to berlin.
 When making requests search for a lat/long within berlin to find partners closeby.
 
+### API Documentation
 Find detailed information on how to use this api in the [openapi spec](https://github.com/ramonamaltan/aroundhome/blob/main/openapi.yaml).
 Make it look pretty pasting it into https://editor.swagger.io/.
 
-### Run
-Clone project and run `go run cmd/main.go`.
-Go to `localhost:8080` and start making requests.
+### Running the Application
 
-#### Example Request
+#### Prerequisites
+Make sure you have Docker and Docker Compose installed on your system.
+- Docker: [Installation Guide](https://www.docker.com/get-started)
+- Docker Compose: [Installation Guide](https://docs.docker.com/compose/install/)
+
+#### Clone the Repository
+````
+git clone https://github.com/ramonamaltan/aroundhome.git
+cd your-repo
+````
+
+#### Build and Run Containers
+Use Docker Compose to build the images and run the containers
+
+````
+docker-compose up --build
+````
+
+This command will:
+- Build the Docker image for the Go application using the provided Dockerfile.
+- Pull the PostgreSQL image from Docker Hub.
+- Run the PostgreSQL container and wait until it's ready.
+- Run the migration service to set up the database schema.
+- Run the Go application container.
+
+#### Verify the Setup
+Access the application at http://localhost:8080.
+
+Example Request
 ````
 http://localhost:8080/flooring/partners?material=carpet&long=13.000&lat=53.000
 ````
-
-### Dummy Data
-On every start of the project a new set of `100 partners` are being inserted to the db.
-
-### Database Setup
-You need to set up a local postgres database for the service to work.
-If not already install `postgres` e.g. [via homebrew](https://wiki.postgresql.org/wiki/Homebrew)
-
-#### First create the user `pguser` with password `localtest`
-
-#### Create the database
-```
-create database aroundhome;
-```
-
-#### From Project Folder run migrations
-```
-migrate -database 'postgres://pguser:localtest@localhost:5432/aroundhome?sslmode=disable' -path internal/db/migrations up
-```
-I use the following package for migrations: https://github.com/golang-migrate/migrate
-
-#### Go to aroundhome db
-```
-\q
-psql aroundhome;
-```
-
-#### Check DB entries
-```
-SELECT * FROM partners;
-```
 
 ### Notes and Assumptions
 - For creating queries and db models I use [sqlc](https://docs.sqlc.dev/en/stable/)
