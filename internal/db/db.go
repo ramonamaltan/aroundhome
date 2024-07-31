@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"os"
 	"time"
 
 	"github.com/jaswdr/faker"
@@ -13,33 +14,31 @@ import (
 	"github.com/ramonamaltan/go-api/internal/models"
 )
 
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "pguser"
-	password = "localtest"
-	dbname   = "aroundhome"
-)
-
 func Init() *sql.DB {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"password=%s dbname=%s sslmode=disable",
+	host := os.Getenv("POSTGRES_HOST")
+	port := os.Getenv("POSTGRES_PORT")
+	user := os.Getenv("POSTGRES_USER")
+	password := os.Getenv("POSTGRES_PASSWORD")
+	dbname := os.Getenv("POSTGRES_DB")
+
+	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
+
 	var err error
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
-		panic(err)
+		log.Fatalf("Error opening database: %q", err)
 	}
 
 	err = db.Ping()
 	if err != nil {
-		panic(err)
+		log.Fatalf("Error pinging database: %q", err)
 	}
 	fmt.Println("Successfully connected!")
 
 	_, err = insertDummyData(db)
 	if err != nil {
-		log.Fatal("failed to insert dummy data")
+		log.Fatalf("Failed to insert dummy data: %q", err)
 	}
 	return db
 }

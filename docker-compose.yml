@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api_server
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=pguser
+      - POSTGRES_PASSWORD=localtest
+      - POSTGRES_DB=aroundhome
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:14
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: pguser
+      POSTGRES_PASSWORD: localtest
+      POSTGRES_DB: aroundhome
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pguser"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  migrate:
+    image: migrate/migrate
+    volumes:
+      - ./internal/db/migrations:/migrations
+    # here instead of localhost as the host we use databaseservicename as that is the name we gave to the postgres service
+    command:
+      [ "-path", "/migrations", "-database",  "postgres://pguser:localtest@postgres_db:5432/aroundhome?sslmode=disable", "up" ]
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres-data:
